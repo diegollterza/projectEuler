@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <set>
 
 using namespace std;
 //////Problem 1/////
@@ -440,12 +441,18 @@ void vetorizar_string(string str, vector<int> *vetor){
 }
 //////////////////////////////////////////////////////////
 void smart_realoca_vetor(vector<int> *vetor){
-    for(int i = 0; i < vetor->size(); i++){
+    int i = 0;
+        while(i<vetor->size()){
             while(vetor->at(i)-10>=0){
                 vetor->at(i) -= 10;
+                if(i+1==vetor->size()){
+                    vetor->push_back(1);
+                }else{
                 vetor->at(i+1) += 1;
+                }
             }
-    }
+            i++;
+        }
 }
 //////////////////////////////////////////////////////////
 long int soma_digitos_vetor(vector<int> vetor){
@@ -465,7 +472,7 @@ void calcula_potencia_vetor(int num, vector<int> *vetor){
         }
     }
 //////////////////////////////////////////////////////////
-void inicializa_vetor(int num, vector<int> *vetor){
+void inicializa_vetor(int num, vector<int> *vetor){//change to 2 if doing calcula_potencia_vetor
     vetor->push_back(2);
     for(int i = 1; i < num; i++){
         vetor->push_back(0);
@@ -594,14 +601,114 @@ int smart_maximum_path_sum(int colunas){
 
 }
 /////////////////////////////////////////////
-int calcula_dias(){
-
-
-
-
+bool check_leap(int year){
+    if((year%100==0)&&(year%400==0)){
+        return true;
+    }
+    if((year%100!=0)&&(year%4==0)){
+        return true;
+    }
+    return false;
 
 }
+////////////////////////////////////////////////////////////
+/////////Problem 19//////////
+int counting_sundays(){
+    int month = 1;
+    int day = 7;
+    int year = 1900;
+    int month_days[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
+    int i = 0;
+    int cont = 0;
+    while(year<2001){
+            day++;
+            i++;
+        if((month == 2)&&(check_leap(year))){
+            if(day>29){
+                day = 1;
+                month++;
+            }
+            }else{
+                if(day>month_days[month-1]){
+                    day = 1;
+                    month++;
+                }
+
+            }
+        if(month > 12){
+            month = 1;
+            year++;
+        }
+        if((i%7==0)&&(year>1900)&&(day == 1)){
+            cont++;
+        }
+}
+    return cont;
+}
+////////////////////////////////////////////////////////////////////
+long int factorial(vector<int> *vetor, int num){
+    for(int i = 1; i <= num; i++){
+        for(int j = 0; j < vetor->size(); j++){
+            vetor->at(j) *= i;
+        }
+        smart_realoca_vetor(vetor);
+    }
+}
+//////////////////////////////////////////////////////////
+vector<int> int_to_vector(long int i){
+    string aux;
+    ostringstream os;
+    os<<i;
+    aux = os.str();
+    vector<int> vetor;
+    vetorizar_string(aux, &vetor);
+    return vetor;
+}
+/////////////////////////////////////////
+///////Problem 20///////////////
+long int factorial_digit_sum(int num){
+    vector<int> vetor;
+    vetor.push_back(1);
+    factorial(&vetor, num);
+    return soma_digitos_vetor(vetor);
+
+}
+///////////////////////////////////////
+int sum_divisor(int num){
+    set<int> aux;
+    vector<int> vetor;
+    if(num == 1) return 0;
+    for(int i = 1; i < num; i++){
+        if(num%i==0){
+            aux.insert(i);
+        }
+    }
+    for(set<int>::iterator it = aux.begin(); it != aux.end(); it++){
+        vetor.push_back(*it);
+    }
+    return soma_digitos_vetor(vetor);
+}
+
+bool is_amicable(int num){
+    int aux;
+    aux = sum_divisor(num);
+    if((sum_divisor(aux)==num)&&(aux!=num)){
+        return true;
+    }
+    return false;
+}
+////////////////////////////////
+int amicable_numbers(int limit){
+    vector<int> soma;
+    for(int i = 2; i < limit; i++){
+        if(is_amicable(i)){
+            soma.push_back(i);
+        }
+    }
+    return soma_digitos_vetor(soma);
+}
+
 int main(){
-    cout<<smart_maximum_path_sum(15);
+    cout<<amicable_numbers(10000);
     return 0;
 }
